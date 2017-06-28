@@ -13,22 +13,8 @@ logging.basicConfig(filename="snippets.log", level=logging.DEBUG)
 logging.debug("Connecting to PostgreSQL")
 connection = psycopg2.connect(database="snippets")
 logging.debug("Database connection established.")
-#
-# def put(name, snippet):
-#   """Store a snippet with an associated name."""
-#   logging.info("Storing snippet {!r}: {!r}".format(name, snippet))
-#   cursor = connection.cursor()
-#   try:
-#     command = "insert into snippets values (%s, %s)"
-#     cursor.execute(command, (name, snippet))
-#     connection.commit()
-#     logging.debug("Snippet stored successfully.")
-#   except psycopg2.IntegrityError:
-#     connection.rollback()
-#     command = "update snippets set message=%s where keyword=%s"
-#     cursor.execute(command, (snippet, name))
-#     logging.debug("Can't insert. There is already a %s snippet.".format(name))
-#   return name, snippet
+
+
 
 
 def put(name, snippet):
@@ -48,6 +34,7 @@ def put(name, snippet):
 
 
 
+
 def get(name):
   """Retrieve the snippet with a given name. """
   logging.info("Retrieving snippet {!r}".format(name))
@@ -62,6 +49,7 @@ def get(name):
     logging.debug("Snippet retrieved successfully.")
     return row[0]
     
+
 
 
 import argparse
