@@ -39,7 +39,7 @@ def get(name):
   """Retrieve the snippet with a given name. """
   logging.info("Retrieving snippet {!r}".format(name))
   with connection, connection.cursor() as cursor:
-    cursor.execute("select * from snippets where keyword=%s", (name,))
+    cursor.execute("select keyword, message from snippets where keyword=%s", (name,))
     row = cursor.fetchone()
   if not row:
     # No snippet was found with that name.
@@ -54,7 +54,7 @@ def get(name):
 def catalog():
   logging.info("Retrieving all keywords from snippets")
   with connection, connection.cursor() as cursor:
-    cursor.execute("select * from snippets order by keyword")
+    cursor.execute("select keyword, message from snippets where hidden is false order by keyword")
     all = cursor.fetchall()
     logging.info("All snippets keywords retrieved")
   return all
@@ -65,7 +65,7 @@ def search(word):
   """Retrieve the snippets that contain a word. """
   logging.info("Retrieving snippets with the word {!r} on the message".format(word))
   with connection, connection.cursor() as cursor:
-    cursor.execute("select * from snippets where message like %s", ('%' + str(word) + '%',))
+    cursor.execute("select keyword, message from snippets where message like %s and hidden is false", ('%' + str(word) + '%',))
     search_snippets = cursor.fetchall()
   return search_snippets
 
@@ -134,19 +134,3 @@ def main():
 
 if __name__ == "__main__":
   main()
-  
-
-# Extra challenge
-#
-# Hidden snippets
-# Maybe you don't want all your snippets to be visible in the catalog. Create a column hidden boolean not null default
-# false and have the catalog and search functions filter their results with where not hidden. You can then add
-# optional arguments to the put subcommand such as --hide, which will set the hidden flag, and one of --show,
-# --unhide, --no-hide, or --hide=0, which will reset it. (If neither flag is set, leave the hidden flag as it was.)
-
-# Hints and Tips
-# To add optional arguments you will need to learn some new parts of the argparse module. Take a look at the argparse
-# tutorial if you are in need of guidance.
-
-# To add a column to the table you will need to change the table schema. The alter table command will be your
-# friend here - look it up if you are unfamiliar with how it works.
