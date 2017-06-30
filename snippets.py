@@ -43,10 +43,10 @@ def get(name):
     row = cursor.fetchone()
   if not row:
     # No snippet was found with that name.
-    logging.debug("Snippet doesn't exist!")
+    logging.debug("Snippet {!r} doesn't exist!".format(name))
     return None
   else:
-    logging.debug("Snippet retrieved successfully.")
+    logging.debug("Snippet {!r} retrieved successfully.".format(name))
     return row
     
 
@@ -56,7 +56,7 @@ def catalog():
   with connection, connection.cursor() as cursor:
     cursor.execute("select keyword, message from snippets where hidden is false order by keyword")
     all = cursor.fetchall()
-    logging.info("All snippets keywords retrieved")
+    logging.info("All snippets retrieved")
   return all
 
 
@@ -67,6 +67,7 @@ def search(word):
   with connection, connection.cursor() as cursor:
     cursor.execute("select keyword, message from snippets where message like %s and hidden is false", ('%' + str(word) + '%',))
     search_snippets = cursor.fetchall()
+    logging.info("All snippets with {!r} on the message retrieved".format(word))
   return search_snippets
 
 
@@ -108,7 +109,7 @@ def main():
 
   if command == "put":
     name, snippet, stored = put(**arguments)
-    if stored == True:
+    if stored:
       print("Stored {!r} as {!r}".format(snippet, name))
     else:
       print("Updated {!r} as {!r}".format(snippet, name))
@@ -123,14 +124,14 @@ def main():
   elif command == "catalog":
     all_snippets = catalog()
     print("Retrieved keywords:")
-    for table in all_snippets:
-      print(table)
+    for snippet in all_snippets:
+      print(snippet)
       
   elif command == "search":
     filtered_snippets = search(**arguments)
     print("Retrieved keywords:")
-    for table in filtered_snippets:
-      print(table)
+    for snippet in filtered_snippets:
+      print(snippet)
 
 if __name__ == "__main__":
   main()
